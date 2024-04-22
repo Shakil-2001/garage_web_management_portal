@@ -383,11 +383,53 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 		}
 
 		{page === 3 && 
-		<div className="flex-1 ml-2 flex flex-col items-center">
-			<div className="markdown_editor">
-				<Typography variant="h2" className="my-auto">Notes</Typography>
-				
-				<MarkdownEditor value={formik.values.description} handleChange={changeDescription}/>
+		<div className="flex flex-row">
+			<div className="flex-7 flex flex-col items-center">
+					<div>
+						<Typography variant="h2" className="my-auto">Notes</Typography>
+						<MarkdownEditor value={formik.values.description} handleChange={changeDescription}/>		
+					</div>
+				</div>
+
+			<div className="flex-3 ml-3" style={{ flex: '3 0 30%' }}>
+				<Autocomplete
+					className="mt-5"
+					multiple
+					limitTags={2}
+					id="compatibleMake"
+					options={
+						parts.filter(part => part.compatibleMake.includes(formik.values.vehicle.make) & part.quantity >= 1)
+						.filter(option => !formik.values.parts.some(part => part._id === option._id))
+					}
+					getOptionLabel={(option) => option.name}
+					value={formik.values.parts}
+					onChange={(e, newValue) => handleAutocompleteChange(e, newValue)}
+					renderInput={(params) => (
+						<TextField
+							{...params}
+							variant="outlined"
+							label="Select Part"
+							placeholder="Select Car Part"
+						/>
+					)}
+					/>
+
+					<div>
+						<div>
+						{formik.values.parts.map(part => (
+							<Card key={part._id} style={{ marginBottom: '10px' }}>
+							<CardContent>
+								<Typography variant="h6" gutterBottom>
+								{part.name}
+								</Typography>
+								<Typography>
+								Cost: {part.cost}
+								</Typography>
+							</CardContent>
+							</Card>
+						))}
+						</div>
+					</div>  
 			</div>
 		</div>
 		}

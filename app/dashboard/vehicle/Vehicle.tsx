@@ -211,7 +211,7 @@ const Vehicle = () => {
 
       </div>
 
-      {modalToggle && <VehicleModal customers={customers} setAddToggle={setModalToggle} add={addVehicle} editVehicle={editVehicle} defaultFormik={currentSelection} setCurrentSelection={setCurrentSelection}/>}
+      {modalToggle && <VehicleModal customers={customers} setAddToggle={setModalToggle} add={addVehicle} editVehicle={editVehicle} defaultFormik={currentSelection} setCurrentSelection={setCurrentSelection} disableCustomer={false}/>}
 
     </>
   )

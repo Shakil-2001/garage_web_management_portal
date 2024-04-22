@@ -209,6 +209,7 @@ const PartModal = ({setModalToggle, addPart, editPart, defaultFormik, parts, set
                 <Autocomplete
                         className="mt-5 w-4/5"
                         multiple
+                        limitTags={4}
                         id="compatibleMake"
                         options={CAR_MAKES}
                         getOptionLabel={(option) => option}

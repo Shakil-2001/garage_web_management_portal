@@ -11,7 +11,7 @@ import PageNavigation from '@/app/components/PageNavigation/PageNavigation';
 
 
 import * as Yup from "yup";
-import {InputLabel, Select, Typography, MenuItem, Button, OutlinedInput, TextField} from '@mui/material'
+import {InputLabel, Select, Typography, MenuItem, Button, OutlinedInput, TextField, Autocomplete} from '@mui/material'
 
 
 const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, parts, employees}) => {
@@ -231,104 +231,83 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 
 				<div className="w-full mt-5 flex flex-row">
 					<div className="w-full">
-						<InputLabel id="employee-label" 
-							>*Select Employees</InputLabel>
-						<div className="flex">
-							<Select
-							className="flex-grow"
-							labelId="employee-label"
-							id="employees"
-							multiple
-							value={selectedEmployees}
-							onChange={(e) => multiHandleChange(e, "employee")}
-							input={<OutlinedInput label="Employee" />}
-							>
-							{employees && employees.map((employee) => (
-								<MenuItem
-								key={employee._id}
-								value={employee}
-								>
-								{employee.firstName + " " + employee.surname}
-								</MenuItem>
-							))}
-							</Select>
-						</div>
+					<Autocomplete
+						className="mt-5"
+						multiple
+						limitTags={3}
+						id="employee"
+						options={employees}
+						getOptionLabel={(option) => (option.firstName, option.surname)}
+						value={selectedEmployees}
+						onChange={(e, newValue) => {
+							setSelectedEmployees(newValue)
+							formik.setFieldValue('employees', newValue)}}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								variant="outlined"
+								label="Select Employees"
+								placeholder="Select Employee"
+							/>
+						)}
+						/>
 					</div>
 				</div>
 
 				<div className="w-full mt-5 flex flex-row">
-					<div className="w-full">
-						<InputLabel id="customer-label" 
-							>*Select Customer</InputLabel>
-						<div className="flex">
-						<Select
-							className="flex-grow"
-							labelId="customer-label"
+					<div className="flex-4 w-full">
+						<Autocomplete
 							id="customer"
+							options={customers}
 							value={formik.values.customer}
-							onChange={(e) => multiHandleChange(e, "customer")}
-							input={<OutlinedInput label="Customer" />}
-							>
-							{formik.values.customer && 
-								<MenuItem
-								key={formik.values.customer}
-								value={formik.values.customer}
-								>
-								{formik.values.customer.firstName + " " + formik.values.customer.surname}
-								</MenuItem>
-							}
-
-							{customers && customers.map((customer) => (
-								<MenuItem
-								key={customer._id}
-								value={customer}
-								>
-								{customer.firstName + " " + customer.surname}
-								</MenuItem>
-							))}
-						</Select>
-							<Button onClick={() => setCustomerModal(true)}variant="outline" endIcon={<AddCircleIcon />}>
-								Create
-							</Button>
-						</div>
+							onChange={(event, newValue) => {
+								console.log(newValue);
+								formik.setFieldValue('customer', newValue);
+							}}
+							getOptionLabel={(customer) => `${customer.surname} ${customer.firstName}`}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label="Customer"
+									variant="outlined"
+									required
+								/>
+							)}
+							/>
+					</div>
+					<div className="flex-1 my-auto">
+						<Button onClick={() => setCustomerModal(true)} variant="outline" endIcon={<AddCircleIcon />}>
+							Create
+						</Button>
 					</div>
 				</div>
 
 				<div className="w-full mt-5 flex flex-row">
-					<div className="w-full">
-						<InputLabel id="vehicle-label" 
-							>*Select Vehicle</InputLabel>
-						<div className="flex">
-						<Select
-							className="flex-grow"
-							labelId="vehicle-label"
+					<div className="flex-4 w-full">
+						<Autocomplete
+							fullWidth
 							id="vehicle"
+							options={vehicles}
 							value={formik.values.vehicle}
-							onChange={(e) => multiHandleChange(e, "vehicle")}
-							input={<OutlinedInput label="Vehicle" />}
-							>
-
-							{formik.values.vehicle && 
-								<MenuItem
-								key={formik.values.vehicle}
-								value={formik.values.vehicle}
-								>
-								{formik.values.vehicle.registrationNumber}
-								</MenuItem>
-							}
-							{vehicles && vehicles.map((vehicle) => (
-								<MenuItem
-								key={vehicle._id}
-								value={vehicle}
-								>
-								{vehicle.registrationNumber}
-								</MenuItem>
-							))}
-						</Select>
+							onChange={(event, newValue) => {
+								console.log(newValue);
+								formik.setFieldValue('vehicle', newValue);
+							}}
+							getOptionLabel={(vehicles) => `${vehicles.registrationNumber}`}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label="Vehicle"
+									variant="outlined"
+									required
+								/>
+							)}
+						/>
+					</div>
+					<div className="flex-1 my-auto">
 						<Button onClick={() => setVehicleModal(true)} variant="outline" endIcon={<AddCircleIcon />}>
 							Create
 						</Button>
-						</div>
 					</div>
 				</div>
 
@@ -341,9 +320,8 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 
 		{page === 2 && 
 			<div className="flex-1 ml-2 flex flex-col items-center">
-				<div className="markdown_editor">
+				<div className="w-5/6">
 					<Typography variant="h2" className="my-auto">*Tasks</Typography>
-					
 					<MarkdownEditor value={formik.values.tasks} handleChange={changeTasks}/>				
 				</div>
 			</div>
@@ -351,9 +329,8 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 
 		{page === 3 && 
 		<div className="flex-1 ml-2 flex flex-col items-center">
-			<div className="markdown_editor">
+			<div className="w-5/6">
 				<Typography variant="h2" className="my-auto">Notes</Typography>
-				
 				<MarkdownEditor value={formik.values.description} handleChange={changeDescription}/>
 			</div>
 		</div>
@@ -384,6 +361,12 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 					onClick={(e) => {
 						e.preventDefault();
 						setAddToggle(false)}}>Cancel</button>
+
+				<button className="bg-red-700 text-white font-bold py-2 px-4 mx-5 rounded outline-none hover:ring-4 shadow-lg transform hover:scale-x-95 transition-transform ring-red-300"
+					onClick={(e) => {
+						e.preventDefault();
+						console.log(formik.values)
+					}}>Log</button>
 			</div>
 
 			
@@ -394,7 +377,7 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
     </ModalWrapper>
 
 		{customerModal && <CustomerModal setAddToggle={setCustomerModal} add={addCustomer} editCustomer={null} defaultFormik={{}} vehicles={vehicles} setCurrentSelection={null}/>}
-		{vehicleModal && <VehicleModal setAddToggle={setVehicleModal} add={addVehicle} editCustomer={null} defaultFormik={{}} customers={customers} setCurrentSelection={null}/>}
+		{vehicleModal && <VehicleModal setAddToggle={setVehicleModal} add={addVehicle} editCustomer={null} defaultFormik={{}} customers={customers} setCurrentSelection={null} disableCustomer={true}/>}
 	</>
   )
 }

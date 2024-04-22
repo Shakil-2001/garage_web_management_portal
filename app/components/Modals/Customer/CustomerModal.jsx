@@ -7,7 +7,7 @@ import * as Yup from "yup";
 import {Switch, FormControlLabel, InputLabel, Select, FormControl, MenuItem, Autocomplete, TextField} from '@mui/material'
 
 
-const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles, setCurrentSelection}) => {
+const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles, setCurrentSelection, job}) => {
 
 	const [error, setError] = useState("")
 	const [edit, setEdit] = useState(false)
@@ -273,7 +273,7 @@ const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles
                                 onClick={(e) => {
                                     e.preventDefault();
                                     setAddToggle(false)
-                                    setCurrentSelection({})
+                                    if(!job){setCurrentSelection({})}
                                 }}>Cancel</button>
                         </div>
                     </div>

@@ -4,10 +4,10 @@ import ModalWrapper from '../Wrappers/ModalWrapper'
 import { useFormik } from "formik"
 import InputField from '../InputField/InputField';
 import * as Yup from "yup";
-import {Switch, FormControlLabel, InputLabel, Select, FormControl, MenuItem} from '@mui/material'
+import {Switch, FormControlLabel, InputLabel, Select, FormControl, MenuItem, Autocomplete, TextField} from '@mui/material'
 
 
-const VehicleModal = ({setAddToggle, add, editVehicle, defaultFormik, customers, setCurrentSelection}) => {
+const VehicleModal = ({setAddToggle, add, editVehicle, defaultFormik, customers, setCurrentSelection, disableCustomer}) => {
 
 	const dvlaAPIKey = process.env.NEXT_PUBLIC_DVLA_API_KEY
 
@@ -199,10 +199,11 @@ const VehicleModal = ({setAddToggle, add, editVehicle, defaultFormik, customers,
 						value={formik.values.wheelplan} 
 						onChange={formik.handleChange}/> 
 
-                    <FormControl required fullWidth value="" sx={{ width: "83.3%"}}>
+                    {/* <FormControl required fullWidth value="" sx={{ width: "83.3%"}}>
 
                         <InputLabel id="customer" className="mt-4" >Customer</InputLabel>
                         <Select
+						disabled={disableCustomer}
 						className="mt-4"
                         labelId="customer"
                         id="customer"
@@ -224,7 +225,27 @@ const VehicleModal = ({setAddToggle, add, editVehicle, defaultFormik, customers,
                             <MenuItem key={customer._id} value={customer._id}>{customer.surname}, {customer.firstName}</MenuItem>
                         )}
                         </Select>
-                    </FormControl>
+                    </FormControl> */}
+
+						<Autocomplete
+									sx={{ width: "83.3%", marginTop: "20px"}}
+									id="customer"
+									options={customers}
+									value={formik.values.customer}
+									onChange={(event, newValue) => {
+										console.log(newValue);
+										formik.setFieldValue('customer', newValue);
+									}}
+									getOptionLabel={(customer) => `${customer.surname}, ${customer.firstName}`}
+									renderInput={(params) => (
+										<TextField
+											{...params}
+											label="Customer"
+											variant="outlined"
+											required
+										/>
+									)}
+								/>
 
 				
 
@@ -251,7 +272,7 @@ const VehicleModal = ({setAddToggle, add, editVehicle, defaultFormik, customers,
 							onClick={(e) => {
 								e.preventDefault();
 								setAddToggle(false)
-								setCurrentSelection({})
+								if(!disableCustomer){setCurrentSelection({})}
 							}}>Cancel</button>
 					</div>
 					

@@ -115,6 +115,8 @@ const Job = () => {
 
   const addVehicle = (json: JSON) => {
 
+    setMessage("adding vehicle")
+
     fetch("http://localhost:3000/api/vehicle", {
       method: "POST",
       mode: "cors",
@@ -134,6 +136,9 @@ const Job = () => {
   }
 
   const addCustomer = (json: JSON) => {
+
+    setMessage("adding customer")
+
     fetch("http://localhost:3000/api/customer", {
       method: "POST",
       mode: "cors",
@@ -152,6 +157,9 @@ const Job = () => {
   }
 
   const addJob = (json: JSON) => {
+
+    setMessage("adding job")
+
     fetch("http://localhost:3000/api/job", {
       method: "POST",
       mode: "cors",

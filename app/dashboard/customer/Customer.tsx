@@ -200,7 +200,7 @@ const Customer = () => {
       }
         
       </div>
-      {modalToggle && <CustomerModal setAddToggle={setModalToggle} add={addCustomer} editCustomer={editCustomer} defaultFormik={currentSelection} vehicles={vehicles} setCurrentSelection={setCurrentSelection}/>}
+      {modalToggle && <CustomerModal job={false} setAddToggle={setModalToggle} add={addCustomer} editCustomer={editCustomer} defaultFormik={currentSelection} vehicles={vehicles} setCurrentSelection={setCurrentSelection}/>}
     </>
     
   )
