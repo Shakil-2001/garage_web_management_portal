@@ -2,6 +2,19 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+### There are 3 pre-requisites to setup a local instance of the project.
+
+#### Install NPM packages
+- Run command 'npm install' to install all required packages.
+
+#### Setup and create a '.env.local' file in the project root folder
+- File variables and keys will be attatched with the additional items along with report submission for safe keeping.
+
+#### Setup up a local proxy 
+- Required to access DVLA API. 
+- Open a new instance of a terminal and execute the following command:
+  - '_lcp --proxyUrl https://driver-vehicle-licensing.api.gov.uk_'
+
 First, run the development server:
 
 ```bash
