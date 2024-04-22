@@ -8,7 +8,7 @@ import PageNavigation from '@/app/components/PageNavigation/PageNavigation';
 
 
 import * as Yup from "yup";
-import {InputLabel, Select, Typography, MenuItem, Button, OutlinedInput, TextField} from '@mui/material'
+import {InputLabel, Select, Typography, MenuItem, Button, OutlinedInput, TextField, Autocomplete, Card, CardContent} from '@mui/material'
 
 
 const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => {
@@ -17,6 +17,50 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 	const [page, setPage] = useState(1)
 	const [selectedEmployees, setSelectedEmployees] = useState([])
 	const [selectMarkdown, setSelectMarkdown] = useState("description")
+	const [originalParts, setOriginalParts] = useState([]) 
+	const [newParts, setNewParts] = useState([])
+	const [removedParts, setRemovedParts] = useState([]);
+
+	const editParts = (ids, action) => {
+
+		const requestBody = JSON.stringify({
+			action: action,
+			itemIds: ids
+		});
+
+		fetch(`http://localhost:3000/api/inventory`, {
+		  method: "PUT",
+		  mode: "cors",
+		  body: requestBody,
+		})
+		.then((response) => response.json())
+		.then((data) => {
+			console.log("success, action")
+		}) 
+		.catch((error) => {
+		  console.log(error)
+		})
+	  }
+
+
+	const handleAutocompleteChange = (e, newValue) => {
+
+		let totalCost = 0;
+
+		const newPartsDifference = newValue.filter(part => !originalParts.some(originalPart => originalPart._id === part._id));
+    
+		const removedPartsDifference = originalParts.filter(originalPart => !newValue.some(part => part._id === originalPart._id));
+		
+		setNewParts(newPartsDifference);
+		setRemovedParts(removedPartsDifference);
+		
+		formik.setFieldValue('parts', newValue);
+
+		newValue.forEach((part) => {totalCost += part.cost})
+
+		formik.setFieldValue('runningCost', parseFloat(totalCost.toFixed(2)));
+	};
+	
 
 	const changeDescription = (obj) => {
 		formik.setValues({ ...formik.values, description: obj });
@@ -45,7 +89,8 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 			description: "",
 			vehicle: {
                 _id: "",
-                registrationNumber: ""
+                registrationNumber: "",
+				make: ""
             },
 			customer: {
                 _id: "",
@@ -59,7 +104,6 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
                 }],
             parts: [{
                 _id: "",
-                quantity: 0,
                 name: "",
                 cost: 0.00
             }],
@@ -67,7 +111,7 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
             manHours: 0,
 			location: "",
 			estimatedCost: 0.00,
-			runningCost: 0.00,
+			runningCost: 0,
             jobComplete: Date,
             jobStart: Date,
             estimatedCompletion: Date,
@@ -86,7 +130,9 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
             vehicle: Yup.object().shape({
               _id: Yup.string()
                 .required('Vehicle ID is required'),
-              registrationNumber: Yup.string()
+              registrationNumber: Yup.string(),
+              make: Yup.string()
+
             }),
             customer: Yup.object().shape({
               _id: Yup.string()
@@ -129,6 +175,8 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 
 		setSelectedEmployees(defaultFormik.employees.map(employee => employee._id));
 
+		setOriginalParts(defaultFormik.parts)
+
 	}, [defaultFormik]);
 
 	const handleSave = (e) => {
@@ -136,6 +184,8 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 
 		if(JSON.stringify(formik.errors) === "{}" || formik.values === null) {
 			edit(JSON.stringify(formik.values), defaultFormik._id);
+			editParts(newParts.map(part => part._id), "remove")
+			editParts(removedParts.map(part => part._id), "add")
 			setEditToggle(false);
 		} else{
 			setError("Missing Required Fields")
@@ -144,7 +194,7 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
   return (
 	
 	<>
-    <ModalWrapper title={"Start new Job"} subtitle={"Enter new job details here."}>
+    <ModalWrapper title={"Edit Job"} subtitle={"Enter job details here."}>
 
 	<form action="">
 		{(page === 1) &&
@@ -153,52 +203,60 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 
 			<div className="w-5/6 flex flex-row justify-center items-center">
 
-			<div className="flex-1 flex-col border-right border border-solid justify-center items-center">
-				<TextField 
-					className="w-full mt-3"
-					id="job" variant="outlined"
-					label={formik.errors.job ? formik.errors.job : "Job"}
-					placeholder="Enter the Job Name:" 
-					htmlFor="job" 
-					required={true} 
-					type="text" 
-					value={formik.values.job} 
-					onChange={formik.handleChange}/>
+			<div className="flex-1 flex-col border-solid border-right justify-center items-center">
+				<div className="w-full mt-5">
+					<TextField 
+						className="w-full mt-3"
+						id="job" variant="outlined"
+						label={formik.errors.job ? formik.errors.job : "Job"}
+						placeholder="Enter the Job Name:" 
+						htmlFor="job" 
+						required={true} 
+						type="text" 
+						value={formik.values.job} 
+						onChange={formik.handleChange}/>
+				</div>
 
-				<TextField 
-					className="w-full mt-5"
-					disabled={true}
-					id="jobStart" variant="outlined"
-					label={formik.errors.jobStart ? formik.errors.jobStart : "Date"}
-					placeholder="Enter the Job Name:" 
-					htmlFor="jobStart" 
-					required={true} 
-					type="text" 
-					value={formik.values.jobStart} 
-					onChange={formik.handleChange}/>
-
-				<TextField 
-					className="w-full mt-5"
-					disabled={true}
-					variant="outlined"
-					label={formik.errors.customer ? formik.errors.customer : "Customer"}
-					placeholder="Customer:" 
-					htmlFor="jobStart" 
-					required={true} 
-					type="text" 
-					value={`${formik.values.customer.firstName} ,${formik.values.customer.surname}`} />
-
+				<div className="w-full mt-5">
+					<TextField 
+						className="w-full"
+						disabled={true}
+						id="jobStart" variant="outlined"
+						label={formik.errors.jobStart ? formik.errors.jobStart : "Date"}
+						placeholder="Enter the Job Name:" 
+						htmlFor="jobStart" 
+						required={true} 
+						type="text" 
+						value={formik.values.jobStart} 
+						onChange={formik.handleChange}/>
+				</div>
 				
-				<TextField 
-					className="w-full mt-5"
-					disabled={true}
-					id="jobStart" variant="outlined"
-					label={formik.errors.vehicle ? formik.errors.vehicle : "Vehicle"}
-					placeholder="Vehicle" 
-					htmlFor="vehicle" 
-					required={true} 
-					type="text" 
-					value={formik.values.vehicle.registrationNumber}/>
+				<div className="w-full mt-5">
+					<TextField 
+						className="w-full"
+						disabled={true}
+						variant="outlined"
+						label={formik.errors.customer ? formik.errors.customer : "Customer"}
+						placeholder="Customer:" 
+						htmlFor="jobStart" 
+						required={true} 
+						type="text" 
+						value={`${formik.values.customer.firstName} ,${formik.values.customer.surname}`} />
+				</div>
+				
+				<div className="w-full mt-5">
+					<TextField 
+						className="w-full"
+						disabled={true}
+						id="jobStart" variant="outlined"
+						label={formik.errors.vehicle ? formik.errors.vehicle : "Vehicle"}
+						placeholder="Vehicle" 
+						htmlFor="vehicle" 
+						required={true} 
+						type="text" 
+						value={formik.values.vehicle.registrationNumber}/>
+				</div>
+				
 			</div>
 
 			<div className="flex-1 flex-col ml-10 h-full">
@@ -246,15 +304,17 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 					</Select>
 				</div>
 
-				<TextField 
-					className="w-full mt-5 flex-none"
-					disabled={true}
-					id="runningCost" variant="outlined"
-					label={formik.errors.runningCost ? formik.errors.runningCost : "Running Cost"}
-					placeholder="Running Cost" 
-					htmlFor="runningCost" 
-					type="text" 
-					value={formik.values.vehicle.runningCost}/>
+				<div className="mt-5 w-full">
+					<TextField 
+						className="w-full mt-5 flex-none"
+						disabled={true}
+						id="runningCost" variant="outlined"
+						label={formik.errors.runningCost ? formik.errors.runningCost : "Running Cost"}
+						placeholder="Running Cost" 
+						htmlFor="runningCost" 
+						type="text" 
+						value={formik.values.runningCost}/>
+				</div>
 
 				<div className="flex-grow pb-10"></div>
 			</div>
@@ -266,13 +326,60 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 		} 
 
 		{page === 2 && 
-			<div className="flex-1 ml-2 flex flex-col items-center">
-				<div className="markdown_editor">
-					<Typography variant="h2" className="my-auto">*Tasks</Typography>
-					
-					<MarkdownEditor value={formik.values.tasks} handleChange={changeTasks}/>				
+
+			<div className="flex flex-row">
+				<div className="flex-7 flex flex-col items-center">
+					<div>
+						<Typography variant="h2" className="my-auto">*Tasks</Typography>
+						<MarkdownEditor value={formik.values.tasks} handleChange={changeTasks}/>			
+					</div>
 				</div>
+
+				<div className="flex-3 ml-3" style={{ flex: '3 0 30%' }}>
+					<Autocomplete
+						className="mt-5"
+						multiple
+						limitTags={2}
+						id="compatibleMake"
+						options={
+							parts.filter(part => part.compatibleMake.includes(formik.values.vehicle.make) & part.quantity >= 1)
+							.filter(option => !formik.values.parts.some(part => part._id === option._id))
+						}
+						getOptionLabel={(option) => option.name}
+						value={formik.values.parts}
+						onChange={(e, newValue) => handleAutocompleteChange(e, newValue)}
+						renderInput={(params) => (
+							<TextField
+								{...params}
+								variant="outlined"
+								label="Select Part"
+								placeholder="Select Car Part"
+							/>
+						)}
+						/>
+
+						<div>
+						<div>
+						{formik.values.parts.map(part => (
+							<Card key={part._id} style={{ marginBottom: '10px' }}>
+							<CardContent>
+								<Typography variant="h6" gutterBottom>
+								{part.name}
+								</Typography>
+								<Typography>
+								Cost: {part.cost}
+								</Typography>
+							</CardContent>
+							</Card>
+						))}
+						</div>
+						</div>  
+				</div>
+
+
+
 			</div>
+			
 		}
 
 		{page === 3 && 

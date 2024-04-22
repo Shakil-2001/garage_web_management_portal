@@ -65,7 +65,7 @@ export async function GET(request) {
 
 			const jobs = await Job.find()
 				.populate('customer', 'firstName surname')
-				.populate('vehicle', 'registrationNumber')
+				.populate('vehicle', 'registrationNumber make')
 				.populate('employees')
 				.populate('parts', 'cost name quantity');
 

@@ -34,6 +34,7 @@ const Job = () => {
 
   const handleRowEditClick = (params: any) => {
 		setCurrentSelection(params.row)
+    console.log(params.row)
 		setEditModalToggle(true);
   };
 

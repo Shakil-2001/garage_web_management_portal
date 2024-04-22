@@ -31,6 +31,7 @@ export async function POST(request) {
 
 // Get all parts
 export async function GET(request) {
+
     await connectMongoDB();
     const parts = await Inventory.find();
     return NextResponse.json({parts});
@@ -49,5 +50,24 @@ export async function DELETE(request) {
 
     await Inventory.findByIdAndDelete(id);
     return NextResponse.json({message: "Part removed from the inventory."}, {status: 200})
+}
+
+export async function PUT(request) {
+    const { action, itemIds } = await request.json();
+
+    await connectMongoDB();
+
+    try {
+        if (action === 'add') {
+            await Inventory.updateMany({ _id: { $in: itemIds } }, { $inc: { quantity: 1 } });
+        }
+
+        else if (action === 'remove') {
+            await Inventory.updateMany({ _id: { $in: itemIds } }, { $inc: { quantity: -1 } });
+        }
+    } catch (error) {
+        return NextResponse.json({ message: error.message }, { status: 404 });
+    }
+    return NextResponse.json({ message: "Inventory stock updated successfully.", status: 200 });
 }
 
