@@ -6,6 +6,9 @@ import IntroCard from '@/app/components/Cards/IntroCard';
 import Table from "@/app/components/TestTable/Table";
 import UpdatePassword from '@/app/components/Modals/UpdatePassword';
 import InfoIcon from '@mui/icons-material/Info';
+import Modal from '@/app/components/Modals/EmployeeModal';
+import { useRouter } from "next/navigation";
+
 
 
 
@@ -21,6 +24,7 @@ const Dashboard = () => {
     const user = useUserStore.getState();
     const [jobs, setJobs] = useState(null)
     const [updatePasswordToggle, setUpdatePasswordToggle] = useState(false)
+    const router = useRouter();
 
     const [message, setMessage] = useState("");
 
@@ -80,10 +84,13 @@ const Dashboard = () => {
                 <Grid container spacing={2} alignItems="stretch">
                     <Grid item xs={8}>
                         <Box sx={{...boxSx, backgroundColor: "#244D87", height:"100%"}}>
-                            <Typography variant="h3" color="white" className="pb-2">My Jobs</Typography>
+                            <Typography variant="h3" color="white" className="pb-2 cursor-pointer" onClick={(e) => {
+                                e.preventDefault();
+                                router.push("/dashboard/job");
+                            }}>My Jobs</Typography>
                             {jobs && 
                                 // @ts-ignore
-                                <Table data={jobs.filter(job => user.jobs.includes(job._id))} columns={columns} defaultRows={3}></Table>
+                                <Table data={jobs.filter(job => user.jobs.includes(job._id) && job.status !== "Complete" && job.status !== "Abandoned")} columns={columns} defaultRows={3}></Table>
                             }
                         </Box>
                     </Grid>
@@ -142,7 +149,7 @@ const Dashboard = () => {
                             <Button variant="contained" color="primary" onClick={(e) => {
                                 e.preventDefault();
                                 setUpdatePasswordToggle(true)
-                            }}>Update Password</Button>
+                            }}>Update Personal Details</Button>
 
                         {message && 
                             <div className="flex justify-end mt-1">
@@ -160,7 +167,9 @@ const Dashboard = () => {
                     </Grid>
                 </Grid>            
             </div>
-            {updatePasswordToggle && <UpdatePassword setToggle={setUpdatePasswordToggle} editEmployee={editEmployee} id={user._id} />}
+            {/* {updatePasswordToggle && <UpdatePassword setToggle={setUpdatePasswordToggle} editEmployee={editEmployee} id={user._id} />} */}
+
+            {updatePasswordToggle && <Modal title={"Update Personal Details"} description="Please enter your new details here:" me={true} setAddToggle={setUpdatePasswordToggle} add={null} editEmployee={editEmployee} defaultFormik={user} setCurrentSelection={null}/>}
         </>
     )
 }

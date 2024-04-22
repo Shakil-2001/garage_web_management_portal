@@ -16,10 +16,10 @@ const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles
 	const formik = useFormik({
 		initialValues: {
             _id:"",
-			firstName: "test",
-			surname: "test",
-			email: "test@mail.com",
-			number: "490289482",
+			firstName: "",
+			surname: "",
+			email: "",
+			number: "",
 			postcode: "",
             region:"",
             city:"",
@@ -27,6 +27,8 @@ const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles
 			vehicles: [],
             jobs: [],
 		},
+
+        
 
 		validationSchema: Yup.object({
 			firstName: Yup.string()
@@ -64,7 +66,18 @@ const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles
 		})
 	});
 
-
+    const handleKeyPress = (event) => {
+        const keyCode = event.keyCode || event.which;
+        const isValidKey = (keyCode >= 48 && keyCode <= 57) || // Numeric keys
+                           keyCode === 8 ||                 // Backspace
+                           keyCode === 9 ||                 // Tab
+                           keyCode === 46 ||                 // Delete
+                           (keyCode >= 37 && keyCode <= 40);  // Arrow keys
+    
+        if (!isValidKey) {
+          event.preventDefault();
+        }
+      };
 
 	useEffect(() => {
 		if(!(JSON.stringify(defaultFormik) === "{}")) {
@@ -132,43 +145,48 @@ const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles
             <div className="flex">
                 <div className="flex-1 border-gray-300 border-r flex flex-col justify-center items-center">
 
-                        <InputField 
+                        <TextField 
+                            className="w-5/6 mt-5"
                             label={formik.errors.firstName ? formik.errors.firstName : "First Name"}
                             disabled={false}
                             placeholder="Enter First Name:" 
-                            htmlFor="firstName" 
+                            id="firstName" 
                             required={true} 
                             type="text" 
                             value={formik.values.firstName} 
                             onChange={formik.handleChange}/> 
 
-                        <InputField 
+                        <TextField 
+                            className="w-5/6 mt-5"
                             label={formik.errors.surname ? formik.errors.surname : "Surname"}
                             placeholder="Enter Surname:" 
                             disabled={false}
-                            htmlFor="surname" 
+                            id="surname" 
                             required={true} 
                             type="text" 
                             value={formik.values.surname} 
                             onChange={formik.handleChange}/> 
 
 
-                        <InputField 
+                        <TextField 
+                            className="w-5/6 mt-5"
                             label={formik.errors.number ? formik.errors.number : "Number"}
                             disabled={false}
                             placeholder="Number Mobile Number:" 
-                            htmlFor="number" 
+                            id="number" 
                             required={true} 
-                            type="Number" 
+                            type="tel" 
+                            onKeyDown={handleKeyPress}
                             value={formik.values.number} 
                             onChange={formik.handleChange}/> 
 
 
-                        <InputField 
+                        <TextField 
+                            className="w-5/6 mt-5"
                             label={formik.errors.email ? formik.errors.email : "Email"}
                             disabled={false}
                             placeholder="Enter Email:" 
-                            htmlFor="email" 
+                            id="email" 
                             required={true} 
                             type="email" 
                             value={formik.values.email} 
@@ -178,11 +196,12 @@ const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles
                 
                 <div className="flex-1 ml-2 flex flex-col items-center">
 
-                        <InputField 
+                        <TextField 
+                            className="w-5/6 mt-5"
                             label={formik.errors.postcode ? formik.errors.postcode : "Postcode"}
                             disabled={false}
                             placeholder="Enter Postcode"
-                            htmlFor="postcode" 
+                            id="postcode" 
                             required={true} 
                             type="text" 
                             value={formik.values.postcode} 
@@ -193,33 +212,36 @@ const CustomerModal = ({setAddToggle, add, editCustomer ,defaultFormik, vehicles
                                 e.preventDefault();
                                 getAddress(formik.values.postcode)}}>Search</button>
                         
-                        <InputField 
+                        <TextField 
+                            className="w-5/6 mt-5"
                             label={formik.errors.region ? formik.errors.region : "Region"}
                             disabled={true}
                             placeholder="Enter Region:"
-                            htmlFor="region" 
+                            id="region" 
                             required={true} 
                             type="text" 
                             value={formik.values.region} 
                             onChange={formik.handleChange}/> 
 
-                        <InputField 
+                        <TextField 
+                            className="w-5/6 mt-5"
                             label={formik.errors.city ? formik.errors.city : "City"}
                             disabled={true}
                             placeholder="Enter City:"
-                            htmlFor="city" 
+                            id="city" 
                             required={true} 
                             type="text" 
                             value={formik.values.city} 
                             onChange={formik.handleChange}/> 
 
-                        <InputField 
+                        <TextField 
+                            className="w-5/6 mt-5"
                             label={formik.errors.address ? formik.errors.address : "Address"}
                             disabled={
                                 formik.values.postcode && formik.values.city && formik.values.region ? false : true
                             }
                             placeholder="Enter Address:"
-                            htmlFor="address" 
+                            id="address" 
                             required={true} 
                             type="text" 
                             value={formik.values.address} 

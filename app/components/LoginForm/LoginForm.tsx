@@ -38,10 +38,13 @@ const LoginForm = () => {
     
     if (!email && !password){
         setError("No email or password provided.")
+        return
     } else if (!email) {
         setError("No email provided.")
+        return
     } else if (!password) {
         setError("No password provided.")
+        return
     }
 
     try {

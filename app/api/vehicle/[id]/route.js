@@ -26,48 +26,48 @@ export async function GET(request, { params }) {
 export async function PUT(request, { params }) {
     const { id } = params;
 
-    const existingVehicle = await Vehicle.findById(id);
-
-    const { customer,
-            registrationNumber, 
-            make, 
-            yearOfManufacture, 
-            engineCapacity, 
-            fuelType, 
-            colour,
-            wheelplan,
-            monthOfFirstRegistration } = await request.json();
-
     await connectMongoDB();
 
-    if (existingVehicle.customer.toString() !== customer) {
-        const oldCustomer = await Customer.findById(existingVehicle.customer);
-
-        oldCustomer.vehicles = oldCustomer.vehicles.filter(vehicleId => vehicleId.toString() !== existingVehicle._id.toString());
-
-        await oldCustomer.save();
-
-        const newCustomer = await Customer.findById(customer);
-
-        newCustomer.vehicles.push(existingVehicle._id);
-
-        await newCustomer.save();
-    }
-
     try {
-        await Vehicle.findByIdAndUpdate(id , { 
-            customer, 
-            registrationNumber, 
-            make, 
-            yearOfManufacture, 
-            engineCapacity, 
-            fuelType, 
+        const existingVehicle = await Vehicle.findById(id);
+
+        if (!existingVehicle) {
+            return NextResponse.json({ message: "Vehicle not found" }, { status: 404 });
+        }
+
+        const { customer, registrationNumber, make, yearOfManufacture, engineCapacity, fuelType, colour, wheelplan, monthOfFirstRegistration } = await request.json();
+
+        if(existingVehicle.customer){
+            if (existingVehicle.customer.toString() !== customer) {
+                const oldCustomer = await Customer.findById(existingVehicle.customer);
+    
+                oldCustomer.vehicles = oldCustomer.vehicles.filter(vehicleId => vehicleId.toString() !== existingVehicle._id.toString());
+    
+                await oldCustomer.save();
+    
+                const newCustomer = await Customer.findById(customer);
+    
+                newCustomer.vehicles.push(existingVehicle._id);
+    
+                await newCustomer.save();
+            }
+        }
+        
+        await Vehicle.findByIdAndUpdate(id, {
+            customer,
+            registrationNumber,
+            make,
+            yearOfManufacture,
+            engineCapacity,
+            fuelType,
             colour,
             wheelplan,
-            monthOfFirstRegistration });
-    } catch (error){
-        return NextResponse.json({message:error.message}, {status: 404});
+            monthOfFirstRegistration
+        });
+
+        return NextResponse.json({ message: "Vehicle updated successfully", status: 200 });
+    } catch (error) {
+        return NextResponse.json({ message: error.message }, { status: 500 });
     }
-    
-    return NextResponse.json({message:"Vehicle updated successfully", status: 200})
 }
+

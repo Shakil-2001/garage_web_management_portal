@@ -342,7 +342,7 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 						limitTags={2}
 						id="compatibleMake"
 						options={
-							parts.filter(part => part.compatibleMake.includes(formik.values.vehicle.make) & part.quantity >= 1)
+							parts.filter(part => (part.compatibleMake.includes(formik.values.vehicle.make) || part.compatibleMake.includes("All")) & part.quantity >= 1)
 							.filter(option => !formik.values.parts.some(part => part._id === option._id))
 						}
 						getOptionLabel={(option) => option.name}
@@ -359,19 +359,19 @@ const AddJobModal = ({setEditToggle, edit ,defaultFormik, parts, employees}) => 
 						/>
 
 						<div>
-						<div>
-						{formik.values.parts.map(part => (
-							<Card key={part._id} style={{ marginBottom: '10px' }}>
-							<CardContent>
-								<Typography variant="h6" gutterBottom>
-								{part.name}
-								</Typography>
-								<Typography>
-								Cost: {part.cost}
-								</Typography>
-							</CardContent>
-							</Card>
-						))}
+						<div style={{ maxHeight: '50vh', overflowY: 'scroll' }}>
+							{formik.values.parts.map(part => (
+								<Card key={part._id} style={{ marginBottom: '10px' }}>
+									<CardContent>
+										<Typography variant="h6" gutterBottom>
+											{part.name}
+										</Typography>
+										<Typography>
+											Cost: {part.cost}
+										</Typography>
+									</CardContent>
+								</Card>
+							))}
 						</div>
 						</div>  
 				</div>

@@ -7,7 +7,7 @@ import * as Yup from "yup";
 import {Switch, FormControlLabel, InputLabel, Select, FormControl, MenuItem} from '@mui/material'
 
 
-const EmployeeModal = ({setAddToggle, add, editEmployee ,defaultFormik, setCurrentSelection}) => {
+const EmployeeModal = ({me, setAddToggle, add, editEmployee ,defaultFormik, setCurrentSelection, title, description}) => {
 
 	const [error, setError] = useState("")
 	const [edit, setEdit] = useState(false)
@@ -109,7 +109,7 @@ const EmployeeModal = ({setAddToggle, add, editEmployee ,defaultFormik, setCurre
 	}
   return (
 	
-    <ModalWrapper title={"Create New Employee."} subtitle={"Enter new employee details here."}>
+    <ModalWrapper title={!defaultFormik || me ? title : "Edit Employee Information"} subtitle={description}>
 
 
 	<form action="">
@@ -224,6 +224,7 @@ const EmployeeModal = ({setAddToggle, add, editEmployee ,defaultFormik, setCurre
 
 				<FormControlLabel 
 					className="pt-5"
+					disabled={me}
 					control={<Switch color="primary" name={"admin"} value={formik.values.admin} onChange={formik.handleChange} />} 
 					label="*Admin Rights" />
 
@@ -260,7 +261,7 @@ const EmployeeModal = ({setAddToggle, add, editEmployee ,defaultFormik, setCurre
 					<button className="bg-red-700 text-white font-bold py-2 px-4 mx-5 rounded outline-none hover:ring-4 shadow-lg transform hover:scale-x-95 transition-transform ring-red-300"
 						onClick={(e) => {
 							e.preventDefault();
-							setCurrentSelection(null)
+							if(!me){setCurrentSelection(null)}
 							setAddToggle(false)}}>Cancel</button>
 
 				</div>

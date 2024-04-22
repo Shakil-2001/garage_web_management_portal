@@ -41,7 +41,7 @@ export async function POST(request) {
         await customerDocument.save();
     }
     
-    return NextResponse.json(newVehicle, {message: "Vehicle Entry Created"}, {status: 200})
+    return NextResponse.json( {message: "Vehicle Entry Created"}, newVehicle, {status: 200})
 }
 
 // Get all vehicles
@@ -66,26 +66,35 @@ export async function GET(request) {
     return NextResponse.json({vehicles: updatedVehicles});
 }
 
-// Delete a vehicle with parameter ID
 export async function DELETE(request) {
     const id = request.nextUrl.searchParams.get("id");
+    if (!id) {
+        return NextResponse.json({ message: "No vehicle ID provided." }, { status: 400 });
+    }
+
     await connectMongoDB();
 
     const existingVehicle = await Vehicle.findById(id);
 
-
-    if(!existingVehicle) {
-        return NextResponse.json({message:"No vehicle found."}, {status: 404})
+    if (!existingVehicle) {
+        return NextResponse.json({ message: "No vehicle found." }, { status: 404 });
     }
 
-    const customerDocument = await Customer.findById(existingVehicle.customer);
+    let customerDocument;
 
-    customerDocument.vehicles = customerDocument.vehicles.filter(id => id.toString() !== existingVehicle._id.toString());
+    if (existingVehicle.customer) {
+        customerDocument = await Customer.findById(existingVehicle.customer);
 
-    await customerDocument.save();
+        if (customerDocument) {
+            customerDocument.vehicles = customerDocument.vehicles.filter(
+                vehicleId => vehicleId.toString() !== existingVehicle._id.toString()
+            );
+            await customerDocument.save();
+        }
+    }
 
     await Vehicle.findByIdAndDelete(id);
-    
-    return NextResponse.json({message: "Vehicle deleted"}, {status: 200})
+
+    return NextResponse.json({ message: "Vehicle deleted" }, { status: 200 });
 }
 

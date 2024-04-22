@@ -2,11 +2,9 @@
 
 import React, { useEffect, useState, useMemo } from 'react'
 import Table from "@/app/components/TestTable/Table";
-import AddModal from '@/app/components/Modals/Customer/AddModal';
 import IntroCard from '@/app/components/Cards/IntroCard';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { Button, IconButton, Box, Typography, Alert} from '@mui/material';
-import EditModal from '@/app/components/Modals/Customer/EditModal';
 import Modal from '@/app/components/Modals/EmployeeModal';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -20,6 +18,14 @@ import { useUserStore } from "../../hooks/userStore"
 const Customer = () => {
 
   const user = useUserStore.getState();
+  const [employees, setEmployees] = useState(null);
+  const [modalToggle, setModalToggle] = useState(false);
+  const [reload, setReload] = useState(false);
+  const [currentSelection, setCurrentSelection] = useState(null);
+  const [message, setMessage] = useState("");
+
+  let modalTitle = "Add new Employee"
+  let modalDescription = "Enter Employee details in the fields below."
 
     const title = "Employee Database.";
     const introText = "View all employee records and information. Create, update and delete employee information.";
@@ -30,6 +36,10 @@ const Customer = () => {
   };
 
   const handleRowDeleteClick = (params: any) => {
+    if(user._id === params.row._id){
+      setMessage("You cannot delete your own account.")
+      return
+    }
     deleteEmployee(params.row._id);
   };
 
@@ -70,11 +80,7 @@ const Customer = () => {
   ], []
   )
 
-  const [employees, setEmployees] = useState(null);
-  const [modalToggle, setModalToggle] = useState(false);
-  const [reload, setReload] = useState(false);
-  const [currentSelection, setCurrentSelection] = useState(null);
-  const [message, setMessage] = useState("");
+  
 
 
   const getEmployees = () => {
@@ -194,7 +200,9 @@ const Customer = () => {
                     <Button 
                     variant="contained" color="primary"
                     startIcon={<AddCircleIcon />}
-                    onClick={() => setModalToggle(true)}
+                    onClick={() => {
+                      setModalToggle(true)
+                    }}
                     sx={{
                       border: "1px solid",
                       color: "white",
@@ -211,7 +219,7 @@ const Customer = () => {
         } 
       </div>
 
-      {modalToggle && <Modal setAddToggle={setModalToggle} add={addEmployee} editEmployee={editEmployee} defaultFormik={currentSelection} setCurrentSelection={setCurrentSelection}/>}
+      {modalToggle && <Modal title={modalTitle} description={modalDescription} me={false} setAddToggle={setModalToggle} add={addEmployee} editEmployee={editEmployee} defaultFormik={currentSelection} setCurrentSelection={setCurrentSelection}/>}
       </>
       )}
     </>

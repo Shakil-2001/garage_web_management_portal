@@ -23,6 +23,7 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 	const [page, setPage] = useState(1)
 	const [selectedEmployees, setSelectedEmployees] = useState([])
 	const [selectMarkdown, setSelectMarkdown] = useState("description")
+	const [customerComplete, setCustomerComplete] = useState(false)
 
 	const changeDescription = (obj) => {
 		formik.setValues({ ...formik.values, description: obj });
@@ -262,6 +263,10 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 							value={formik.values.customer}
 							onChange={(event, newValue) => {
 								console.log(newValue);
+								if(newValue === null ){
+									setCustomerComplete(false)
+								} else { setCustomerComplete(true)
+								}
 								formik.setFieldValue('customer', newValue);
 							}}
 							getOptionLabel={(customer) => `${customer.surname} ${customer.firstName}`}
@@ -287,7 +292,12 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 						<Autocomplete
 							fullWidth
 							id="vehicle"
-							options={vehicles}
+							disabled={!customerComplete}
+							options={ formik.values.customer ?
+								vehicles.filter(vehicle => !vehicle.customer || vehicle.customer._id === formik.values.customer._id) :
+								vehicles.filter(vehicle => !vehicle.customer)
+							}
+							
 							value={formik.values.vehicle}
 							onChange={(event, newValue) => {
 								console.log(newValue);
@@ -305,7 +315,7 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 						/>
 					</div>
 					<div className="flex-1 my-auto">
-						<Button onClick={() => setVehicleModal(true)} variant="outline" endIcon={<AddCircleIcon />}>
+						<Button disabled={!customerComplete} onClick={() => setVehicleModal(true)} variant="outline" endIcon={<AddCircleIcon />}>
 							Create
 						</Button>
 					</div>
@@ -361,12 +371,6 @@ const AddJobModal = ({setAddToggle, add ,defaultFormik, customers, vehicles, par
 					onClick={(e) => {
 						e.preventDefault();
 						setAddToggle(false)}}>Cancel</button>
-
-				<button className="bg-red-700 text-white font-bold py-2 px-4 mx-5 rounded outline-none hover:ring-4 shadow-lg transform hover:scale-x-95 transition-transform ring-red-300"
-					onClick={(e) => {
-						e.preventDefault();
-						console.log(formik.values)
-					}}>Log</button>
 			</div>
 
 			

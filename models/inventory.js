@@ -31,8 +31,7 @@ const inventorySchema = new Schema(
             required: true
         }, 
         subCategory: { 
-            type: String,
-            required: true
+            type: String
         },
         compatibleMake: [{
             type: String,

@@ -199,53 +199,27 @@ const VehicleModal = ({setAddToggle, add, editVehicle, defaultFormik, customers,
 						value={formik.values.wheelplan} 
 						onChange={formik.handleChange}/> 
 
-                    {/* <FormControl required fullWidth value="" sx={{ width: "83.3%"}}>
-
-                        <InputLabel id="customer" className="mt-4" >Customer</InputLabel>
-                        <Select
-						disabled={disableCustomer}
-						className="mt-4"
-                        labelId="customer"
-                        id="customer"
-                        name={"customer"}
-                        value={formik.values.customer}
-                        label="Customer"
-                        onChange={formik.handleChange}
-                        >
-
-                        {formik.values.customer !== "" ?             
-                            <MenuItem key={formik.values.customer} value={formik.values.customer}>
-                                {customers.find(customer => customer._id === formik.values.customer) ? `${customers.find(customer => customer._id === formik.values.customer).surname}, ${customers.find(customer => customer._id === formik.values.customer).firstName}` : ""}
-                            </MenuItem>
-                            :
-                            <MenuItem key={"none"} value={""}>None</MenuItem>
-                        }            
-
-                        {customers.map((customer) => 
-                            <MenuItem key={customer._id} value={customer._id}>{customer.surname}, {customer.firstName}</MenuItem>
-                        )}
-                        </Select>
-                    </FormControl> */}
-
+						<InputLabel className="mt-3" htmlFor="customer">Only use if neccessary.</InputLabel>
 						<Autocomplete
-									sx={{ width: "83.3%", marginTop: "20px"}}
-									id="customer"
-									options={customers}
-									value={formik.values.customer}
-									onChange={(event, newValue) => {
-										console.log(newValue);
-										formik.setFieldValue('customer', newValue);
-									}}
-									getOptionLabel={(customer) => `${customer.surname}, ${customer.firstName}`}
-									renderInput={(params) => (
-										<TextField
-											{...params}
-											label="Customer"
-											variant="outlined"
-											required
-										/>
-									)}
+							sx={{ width: "83.3%"}}
+							id="customer"
+							disabled={disableCustomer}
+							options={customers}
+							value={formik.values.customer}
+							onChange={(event, newValue) => {
+								console.log(newValue);
+								formik.setFieldValue('customer', newValue);
+							}}
+							getOptionLabel={(customer) => `${customer.surname}, ${customer.firstName}`}
+							renderInput={(params) => (
+								<TextField
+									{...params}
+									label="Customer"
+									variant="outlined"
+									required
 								/>
+							)}
+						/>
 
 				
 
@@ -272,14 +246,11 @@ const VehicleModal = ({setAddToggle, add, editVehicle, defaultFormik, customers,
 							onClick={(e) => {
 								e.preventDefault();
 								setAddToggle(false)
+								console.log(customers)
 								if(!disableCustomer){setCurrentSelection({})}
 							}}>Cancel</button>
 					</div>
-					
-					{/* <button className="bg-red-700 text-white font-bold py-2 px-4 mx-5 rounded outline-none hover:ring-4 shadow-lg transform hover:scale-x-95 transition-transform ring-red-300"
-						onClick={(e) => {
-							e.preventDefault();
-							console.log(formik.values)}}>Log</button> */}
+				
 
 				</div>
 

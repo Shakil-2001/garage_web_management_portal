@@ -51,23 +51,23 @@ const PartModal = ({setModalToggle, addPart, editPart, defaultFormik, parts, set
                 .nullable(),
             category: Yup.string()
 				.required('Category is Required')
-				.max(100, 'Must be less than 20 characters.'),
+				.max(100, 'Must be less than 100 characters.'),
             subCategory: Yup.string()
-				.max(100, 'Must be less than 20 characters.'),
+				.max(100, 'Must be less than 100 characters.'),
             compatibleMake: Yup.array()
 				.of(Yup.string()),
             quantity: Yup.number()
 				.required('Quantity is required.')
-                .positive()
-                .integer()
-                .min(0)
-                .max(100),
+                .positive("Number Must be a Positive Interger")
+                .integer("Number Must be a Positive Interger")
+                .min(0, "Must = 0 or greater")
+                .max(300, "Must be less than 300"),
             minQuantity: Yup.number()
 				.required('Minimum Quantity is required.')
-                .positive()
-                .integer()
-                .min(0)
-                .max(100)
+                .positive("Number Must be a Positive Interger")
+                .integer("Number Must be a Positive Interger")
+                .min(0, "Must = 0 or greater")
+                .max(300, "Must be less than 300")
 		})
 	});
 
@@ -165,7 +165,7 @@ const PartModal = ({setModalToggle, addPart, editPart, defaultFormik, parts, set
                         id="subCategory"
                         name={"subCategory"}
                         value={formik.values.subCategory}
-                        label="Select the Part Category*"
+                        label="Select the Part Category"
                         onChange={formik.handleChange}
                         >
                         <MenuItem >
@@ -185,7 +185,7 @@ const PartModal = ({setModalToggle, addPart, editPart, defaultFormik, parts, set
                 <div className="flex flex-row">
 
                     <InputField 
-                            label={formik.errors.minQuantity ? formik.errors.minQuantity : "Min Quantity"}
+                            label={formik.errors.minQuantity ? "Min Quantity Required" : "Min Quantity"}
                             disabled={false}
                             placeholder="Select Minimum Quantity."
                             htmlFor="minQuantity" 
@@ -195,7 +195,7 @@ const PartModal = ({setModalToggle, addPart, editPart, defaultFormik, parts, set
                             onChange={formik.handleChange}/> 
 
 					<InputField 
-						label={formik.errors.quantity ? formik.errors.quantity : "Quantity"}
+						label={formik.errors.quantity ? "Quantity Required" : "Quantity"}
                         disabled={false}
 						placeholder="Select Quantity."
 						htmlFor="quantity" 
@@ -209,7 +209,7 @@ const PartModal = ({setModalToggle, addPart, editPart, defaultFormik, parts, set
                 <Autocomplete
                         className="mt-5 w-4/5"
                         multiple
-                        limitTags={4}
+                        limitTags={2}
                         id="compatibleMake"
                         options={CAR_MAKES}
                         getOptionLabel={(option) => option}

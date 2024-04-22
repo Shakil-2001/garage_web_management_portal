@@ -86,8 +86,6 @@ const Vehicle = () => {
 
   const deleteVehicle = (id:string) => {
 
-    console.log(id)
-
     fetch(`http://localhost:3000/api/vehicle?id=${id}`, {
       method: "DELETE",
       mode: "cors",
@@ -104,6 +102,8 @@ const Vehicle = () => {
   }
 
   const addVehicle = (json: JSON) => {
+
+    console.log("running add")
 
     fetch("http://localhost:3000/api/vehicle", {
       method: "POST",

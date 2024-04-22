@@ -5,7 +5,7 @@ import { useUserStore } from "../../hooks/userStore"
 import Table from "@/app/components/TestTable/Table";
 import IntroCard from '@/app/components/Cards/IntroCard';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { Button, IconButton, Box, Alert, Typography, LinearProgress, ToggleButton, FormControlLabel, Checkbox } from '@mui/material';
+import { Button, IconButton, Box, Alert, Typography, LinearProgress, ToggleButton, FormControlLabel, Switch } from '@mui/material';
 import AddJobModal from '@/app/components/Modals/AddJobModal';
 import EditJobModal from '@/app/components/Modals/EditJobModal';
 import EditIcon from '@mui/icons-material/Edit';
@@ -17,6 +17,7 @@ const Job = () => {
 
   const title = "Job Dashboard"
   const introText = "View all job records and information. Start, track and update job information"
+
   const user = useUserStore.getState();
 
   const [vehicles, setVehicles] = useState(null);
@@ -30,7 +31,7 @@ const Job = () => {
   const [reload, setReload] = useState(true);
   const [currentSelection, setCurrentSelection] = useState({});
   const [message, setMessage] = useState("");
-
+  const [myJobsButton, setMyJobsButton] = useState("View my jobs");
 
   const handleRowEditClick = (params: any) => {
 		setCurrentSelection(params.row)
@@ -197,6 +198,8 @@ const Job = () => {
 
   const deleteJob = (id:string) => {
 
+    setMessage("deleting job")
+
     fetch(`http://localhost:3000/api/job/${id}`, {
       method: "DELETE",
       mode: "cors",
@@ -238,6 +241,8 @@ const Job = () => {
         </div>
         }
 
+        
+
         <Box sx={{
           height: '60%',
           width: 'max',
@@ -261,6 +266,27 @@ const Job = () => {
                 <li className="ml-auto mr-3 my-auto">
                     <Button 
                     variant="contained" color="primary"
+                    onClick={() => {
+                      setMyJobs(!myJobs)
+                     if(myJobs) {
+                        setMyJobsButton("View My Jobs") 
+                     }else {
+                      setMyJobsButton("View All Jobs")
+                     }
+                    }}
+                    sx={{
+                        border: "1px solid",
+                        color: "white",
+                        float: 'right',
+
+                    }}>
+                        {myJobsButton}
+                    </Button>
+                </li>
+
+                <li className="ml-auto mr-3 my-auto">
+                    <Button 
+                    variant="contained" color="primary"
                     startIcon={<AddCircleIcon />}
                     onClick={() => setAddModalToggle(true)}
                     sx={{
@@ -278,7 +304,8 @@ const Job = () => {
         {reload && <LinearProgress/>}
 
         {jobs &&
-          <Table data={jobs} columns={columns} defaultRows={5}></Table>
+          // @ts-ignore
+          <Table data={myJobs ? jobs.filter(job => user.jobs.includes(job._id)) : jobs} columns={columns} defaultRows={5}></Table>
         } 
 
       </div>
